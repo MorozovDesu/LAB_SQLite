@@ -10,9 +10,7 @@ public class StudentsTableModel extends AbstractTableModel {
 
     public StudentsTableModel(List<Student> students){
         data = students;
-
     }
-
     @Override
     public int getRowCount() {
         return data.size();

@@ -14,16 +14,14 @@ import static MD.DB.DBWorker.conn;
 public class Main {
     public static void main(String[] args) throws SQLException {
         new MainWindow();
-        //DBWorker.initDB();
+        DBWorker.initDB();
         DBWorker.addGroup("istb1");
-        //DBWorker.addGroup("istb2");
-        //DBWorker.addGroup("istb3");
-        //DBWorker.getGroups();
-
+//        DBWorker.addGroup("istb2");
+//        DBWorker.addGroup("istb3");
+//        DBWorker.addGroup("istb9");
+        DBWorker.getGroups();
 
         //DBWorker.closeDB();
-
-
 
         List<Student> students = DBWorker.getAllStudents();
         System.out.println("all:");
@@ -33,7 +31,6 @@ public class Main {
         for (Student stud : students) {
             System.out.println(stud);
         }
-
     }
     public static List<Student> getAllStudents() throws SQLException {
         return DBWorker.getAllStudents();

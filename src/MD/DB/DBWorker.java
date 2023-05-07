@@ -68,7 +68,6 @@ public class DBWorker {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     public static void getGroups() {
@@ -83,8 +82,6 @@ public class DBWorker {
             ex.printStackTrace();
         }
     }
-
-
     public static List<Student> getAllStudents() throws SQLException {
         Statement statement = conn.createStatement();
         List<Student> list = new ArrayList<Student>();
@@ -96,9 +93,7 @@ public class DBWorker {
         statement.close();
         return list;
     }
-
     public static String getGroupName(int grId) throws SQLException {
-
         Statement statement = conn.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT title FROM groups WHERE groups.id ="+grId);
         String grName = "";
@@ -107,16 +102,13 @@ public class DBWorker {
         statement.close();
         return grName;
     }
-
     public static void deleteStudent(Student student) throws SQLException {
         Statement statement = conn.createStatement();
         statement.execute("DELETE FROM students WHERE students.id ="+student.getId());
         System.out.println("deleted!");
         statement.close();
     }
-
     public static int getGroupId(String grName) throws SQLException {
-
         Statement statement = null;
         ResultSet resultSet = null;
         int groupId = -1;

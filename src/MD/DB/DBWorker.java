@@ -1,6 +1,6 @@
 package MD.DB;
 
-import MD.model.Student;
+import MD.model.Testee;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -46,13 +46,13 @@ public class DBWorker {
         }
 
     }
-    public static void addStudent(Student student) throws SQLException {
+    public static void addStudent(Testee testee) throws SQLException {
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement statement = conn.prepareStatement(
                      "INSERT INTO students(`lastname`,`name`,`group_id`) VALUES(?,?,?)")) {
-            statement.setObject(1, student.getLastname());
-            statement.setObject(2, student.getName());
-            statement.setObject(3, student.getGroup());
+            statement.setObject(1, testee.getNameTest());
+            statement.setObject(2, testee.getNameTestee());
+            statement.setObject(3, testee.getResultTest());
             statement.execute();
         } catch(SQLException e) {
             e.printStackTrace();
@@ -82,12 +82,12 @@ public class DBWorker {
             ex.printStackTrace();
         }
     }
-    public static List<Student> getAllStudents() throws SQLException {
+    public static List<Testee> getAllStudents() throws SQLException {
         Statement statement = conn.createStatement();
-        List<Student> list = new ArrayList<Student>();
+        List<Testee> list = new ArrayList<Testee>();
         ResultSet resultSet = statement.executeQuery("SELECT students.id, students.lastname, students.name, students.group_id, groups.title FROM students JOIN groups ON groups.id = students.group_id");
         while (resultSet.next()) {
-            list.add(new Student(resultSet.getInt("id"),resultSet.getString("lastname"), resultSet.getString("name"), getGroupName(resultSet.getInt("group_id"))));
+            list.add(new Testee(resultSet.getInt("id"),resultSet.getString("lastname"), resultSet.getString("name"), getGroupName(resultSet.getInt("group_id"))));
         }
         resultSet.close();
         statement.close();
@@ -102,9 +102,9 @@ public class DBWorker {
         statement.close();
         return grName;
     }
-    public static void deleteStudent(Student student) throws SQLException {
+    public static void deleteStudent(Testee testee) throws SQLException {
         Statement statement = conn.createStatement();
-        statement.execute("DELETE FROM students WHERE students.id ="+student.getId());
+        statement.execute("DELETE FROM students WHERE students.id ="+ testee.getId());
         System.out.println("deleted!");
         statement.close();
     }

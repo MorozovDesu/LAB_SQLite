@@ -1,30 +1,28 @@
 package MD.view;
 
 import MD.DB.DBWorker;
-import MD.model.Student;
-import MD.StudentsTableModel;
+import MD.model.Testee;
+import MD.TesteesTableModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLException;
 
 public class MainWindow extends JFrame {
-    private JTable studTable;
-    private JButton addStudent;
-    private JButton deleteStudent;
-    private StudentsTableModel model;
+    private JTable testingTable;
+    private JButton addTestee;
+    private JButton deleteTestee;
+    private TesteesTableModel model;
 
     public MainWindow() {
-        super("Студенты");
+        super("Тестирование");
         init();
     }
     private void init() {
         DBWorker.initDB();
-
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -32,52 +30,52 @@ public class MainWindow extends JFrame {
             }
         });
 
-        studTable = new JTable();
+        testingTable = new JTable();
         try {
-            model = new StudentsTableModel(DBWorker.getAllStudents());
-            studTable.setModel(model);
+            model = new TesteesTableModel(DBWorker.getAllStudents());
+            testingTable.setModel(model);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
 
         Container contentPane = this.getContentPane();
-        contentPane.add(new JScrollPane(studTable), BorderLayout.CENTER);
+        contentPane.add(new JScrollPane(testingTable), BorderLayout.CENTER);
 
-        addStudent = new JButton("Добавить студента");
-        addStudent.addActionListener(e -> {
+        addTestee = new JButton("Добавить тест и результаты");
+        addTestee.addActionListener(e -> {
             try {
-                String lastname = JOptionPane.showInputDialog(null, "Введите фамилию");
-                String name = JOptionPane.showInputDialog(null, "Введите имя");
-                String group = JOptionPane.showInputDialog(null, "Введите группу");
-                Student student = new Student(lastname, name, group);
-                DBWorker.addStudent(student);
-                List<Student> allStudents = DBWorker.getAllStudents();
-                model.setStudents(allStudents); // Обновляем модель таблицы
+                String nameTestee = JOptionPane.showInputDialog(null, "Введите название теста");
+                String nameTest = JOptionPane.showInputDialog(null, "Введите количество баллов");
+                String resultTest = JOptionPane.showInputDialog(null, "Введите испытуемого");
+                Testee testee = new Testee(nameTestee, nameTest, resultTest);
+                DBWorker.addStudent(testee);
+                List<Testee> allTestees = DBWorker.getAllStudents();
+                model.setTestees(allTestees); // Обновляем модель таблицы
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         });
 
-        deleteStudent = new JButton("Удалить студента");
-        deleteStudent.addActionListener(e -> {
-            int selectedRow = studTable.getSelectedRow();
+        deleteTestee = new JButton("Удалить");
+        deleteTestee.addActionListener(e -> {
+            int selectedRow = testingTable.getSelectedRow();
             if(selectedRow == -1) {
                 // Если строка не выбрана, выводим сообщение
-                JOptionPane.showMessageDialog(this, "Выберите студента для удаления");
+                JOptionPane.showMessageDialog(this, "Выберите строчку для удаления");
                 return;
             }
 
             try {
-                DBWorker.deleteStudent(model.getStudent(selectedRow));
-                model.setStudents(DBWorker.getAllStudents());
+                DBWorker.deleteStudent(model.getTestees(selectedRow));
+                model.setTestees(DBWorker.getAllStudents());
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         });
 
         JPanel butPane = new JPanel();
-        butPane.add(addStudent);
-        butPane.add(deleteStudent);
+        butPane.add(addTestee);
+        butPane.add(deleteTestee);
 
         contentPane.add(butPane, BorderLayout.SOUTH);
 

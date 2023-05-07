@@ -1,15 +1,15 @@
 package MD;
 
-import MD.model.Student;
+import MD.model.Testee;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class StudentsTableModel extends AbstractTableModel {
-    private List<Student> data;
+public class TesteesTableModel extends AbstractTableModel {
+    private List<Testee> data;
 
-    public StudentsTableModel(List<Student> students){
-        data = students;
+    public TesteesTableModel(List<Testee> testees){
+        data = testees;
     }
     @Override
     public int getRowCount() {
@@ -23,11 +23,11 @@ public class StudentsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Student st = data.get(rowIndex);
+        Testee st = data.get(rowIndex);
         switch (columnIndex){
-            case 0: return st.getLastname();
-            case 1: return st.getName();
-            case 2: return st.getGroup();
+            case 0: return st.getNameTest();
+            case 1: return st.getNameTestee();
+            case 2: return st.getResultTest();
         }
         return "";
     }
@@ -35,19 +35,19 @@ public class StudentsTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int column) {
         switch (column){
-            case 0: return "Фамилия";
-            case 1: return "Имя";
-            case 2: return "Группа";
+            case 0: return "Тест";
+            case 1: return "Результаты";
+            case 2: return "Испытуемый";
         }
         return "";
     }
 
-    public Student getStudent(int selectedRow) {
+    public Testee getTestees(int selectedRow) {
         return data.get(selectedRow);
     }
 
-    public void setStudents(List<Student> allStudents) {
-        this.data = allStudents;
+    public void setTestees(List<Testee> allTestees) {
+        this.data = allTestees;
         fireTableDataChanged(); // Сообщаем таблице, что данные изменились
     }
 }

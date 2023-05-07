@@ -1,7 +1,7 @@
 package MD;
 
 import MD.DB.DBWorker;
-import MD.model.Student;
+import MD.model.Testee;
 import MD.view.MainWindow;
 
 import java.sql.*;
@@ -11,23 +11,19 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws SQLException {
         new MainWindow();
-
-        DBWorker.addGroup("istb1");
-//        DBWorker.addGroup("istb2");
-//        DBWorker.addGroup("istb3");
-//        DBWorker.addGroup("istb9");
+        DBWorker.addGroup("Морозов");
 
 
-        List<Student> students = DBWorker.getAllStudents();
+
+        List<Testee> testees = DBWorker.getAllStudents();
         System.out.println("all:");
-        System.out.println(students);
-        //System.out.println(DBWorker.getGroupId("АСУб-19"));
-        students = DBWorker.getAllStudents();
-        for (Student stud : students) {
-            System.out.println(stud);
+        System.out.println(testees);
+        testees = DBWorker.getAllStudents();
+        for (Testee tst : testees) {
+            System.out.println(tst);
         }
     }
-    public static List<Student> getAllStudents() throws SQLException {
+    public static List<Testee> getAllTestee() throws SQLException {
         return DBWorker.getAllStudents();
     }
 //    public static List<Student> getAllStudents() {

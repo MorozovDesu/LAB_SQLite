@@ -5,23 +5,18 @@ import MD.model.Student;
 import MD.view.MainWindow;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import static MD.DB.DBWorker.conn;
+//7. Предметная область: тестирование. Таблицы: испытуемые, тесты, результаты тестов.
 
 public class Main {
     public static void main(String[] args) throws SQLException {
         new MainWindow();
-        DBWorker.initDB();
+
         DBWorker.addGroup("istb1");
 //        DBWorker.addGroup("istb2");
 //        DBWorker.addGroup("istb3");
 //        DBWorker.addGroup("istb9");
-        DBWorker.getGroups();
 
-        //DBWorker.closeDB();
 
         List<Student> students = DBWorker.getAllStudents();
         System.out.println("all:");

@@ -11,20 +11,17 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws SQLException {
         new MainWindow();
-        DBWorker.addGroup("Морозов");
 
-
-
-        List<Testee> testees = DBWorker.getAllStudents();
+        List<Testee> testees = DBWorker.getAllTestees();
         System.out.println("all:");
         System.out.println(testees);
-        testees = DBWorker.getAllStudents();
+        testees = DBWorker.getAllTestees();
         for (Testee tst : testees) {
             System.out.println(tst);
         }
     }
     public static List<Testee> getAllTestee() throws SQLException {
-        return DBWorker.getAllStudents();
+        return DBWorker.getAllTestees();
     }
 //    public static List<Student> getAllStudents() {
 //        // Statement используется для того, чтобы выполнить sql-запрос

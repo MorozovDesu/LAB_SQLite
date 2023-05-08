@@ -19,6 +19,21 @@ public class Testee {
         this.setResultTest(group_id);
     }
 
+    public Testee(String nameTest, String nameTestee, int group_id) {
+        this.setNameTest(nameTest);
+        this.setNameTestee(nameTestee);
+        this.setResultTest(String.valueOf(group_id));
+    }
+
+    public Testee(String testeeName, int groupId) {
+        this.setNameTestee(testeeName);
+        this.setResultTest(String.valueOf(groupId));
+    }
+
+    public Testee(int groupId) {
+        this.setResultTest(String.valueOf(groupId));
+    }
+
     @Override
     public String toString() {
         return getId()+ ": "+ getNameTest() + ' ' + getNameTestee() + ' ' + " : " + getResultTest();

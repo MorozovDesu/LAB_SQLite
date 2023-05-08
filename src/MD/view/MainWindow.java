@@ -13,8 +13,9 @@ import java.sql.SQLException;
 
 public class MainWindow extends JFrame {
     private JTable testingTable;
+    private JButton addTest;
+    private JButton deleteTest;
     private JButton addTestee;
-    private JButton deleteTestee;
     private TesteesTableModel model;
 
     public MainWindow() {
@@ -32,7 +33,7 @@ public class MainWindow extends JFrame {
 
         testingTable = new JTable();
         try {
-            model = new TesteesTableModel(DBWorker.getAllStudents());
+            model = new TesteesTableModel(DBWorker.getAllTestees());
             testingTable.setModel(model);
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -41,41 +42,59 @@ public class MainWindow extends JFrame {
         Container contentPane = this.getContentPane();
         contentPane.add(new JScrollPane(testingTable), BorderLayout.CENTER);
 
-        addTestee = new JButton("Добавить тест и результаты");
-        addTestee.addActionListener(e -> {
+        addTest = new JButton("Добавить тест и результаты");
+        addTest.addActionListener(e -> {
             try {
                 String nameTestee = JOptionPane.showInputDialog(null, "Введите название теста");
                 String nameTest = JOptionPane.showInputDialog(null, "Введите количество баллов");
                 String resultTest = JOptionPane.showInputDialog(null, "Введите испытуемого");
                 Testee testee = new Testee(nameTestee, nameTest, resultTest);
-                DBWorker.addStudent(testee);
-                List<Testee> allTestees = DBWorker.getAllStudents();
+                DBWorker.addTest(testee);
+                List<Testee> allTestees = DBWorker.getAllTestees();
                 model.setTestees(allTestees); // Обновляем модель таблицы
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         });
 
-        deleteTestee = new JButton("Удалить");
-        deleteTestee.addActionListener(e -> {
+        deleteTest = new JButton("Удалить");
+        deleteTest.addActionListener(e -> {
             int selectedRow = testingTable.getSelectedRow();
             if(selectedRow == -1) {
                 // Если строка не выбрана, выводим сообщение
                 JOptionPane.showMessageDialog(this, "Выберите строчку для удаления");
                 return;
             }
-
             try {
-                DBWorker.deleteStudent(model.getTestees(selectedRow));
-                model.setTestees(DBWorker.getAllStudents());
+                DBWorker.deleteTestee(model.getTestees(selectedRow));
+                model.setTestees(DBWorker.getAllTestees());
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         });
-
+        addTestee = new JButton("Добавить испытуемого");
+        addTestee.addActionListener(e -> {
+            String groupName = JOptionPane.showInputDialog(null, "Введите название группы");
+            if (groupName != null && !groupName.isEmpty()) {
+                try {
+                    int groupId = DBWorker.getGroupId(groupName);
+                    if (groupId == -1) {
+                        // Если группа не найдена, создаем новую
+                        DBWorker.addGroup(groupName);
+                        groupId = DBWorker.getGroupId(groupName);
+                    }
+                    Testee testee = new Testee(groupId);
+                    DBWorker.addGroup(String.valueOf(testee));
+                    model.setTestees(DBWorker.getAllTestees()); // Обновляем модель таблицы
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
         JPanel butPane = new JPanel();
+        butPane.add(addTest);
+        butPane.add(deleteTest);
         butPane.add(addTestee);
-        butPane.add(deleteTestee);
 
         contentPane.add(butPane, BorderLayout.SOUTH);
 

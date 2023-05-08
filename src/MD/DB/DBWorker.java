@@ -38,7 +38,7 @@ public class DBWorker {
     public static void addGroup(String title) {
         try {
             PreparedStatement statement = conn.prepareStatement("INSERT INTO groups(`title`)"+"VALUES(?);");
-            statement.setObject(1, title);//data
+            statement.setObject(1, title);
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -46,13 +46,13 @@ public class DBWorker {
         }
 
     }
-    public static void addStudent(Testee testee) throws SQLException {
+    public static void addTest(Testee testee) throws SQLException {
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement statement = conn.prepareStatement(
-                     "INSERT INTO students(`lastname`,`name`,`group_id`) VALUES(?,?,?)")) {
+                     "INSERT INTO students(`name_test`,`results`,`group_id`) VALUES(?,?,?)")) {
             statement.setObject(1, testee.getNameTest());
-            statement.setObject(2, testee.getNameTestee());
-            statement.setObject(3, testee.getResultTest());
+            statement.setObject(2, testee.getResultTest());
+            statement.setObject(3, testee.getNameTestee());
             statement.execute();
         } catch(SQLException e) {
             e.printStackTrace();
@@ -63,7 +63,7 @@ public class DBWorker {
             Statement statement = conn.createStatement();
             statement.execute("CREATE TABLE if not exists 'groups' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'title' text);");
             System.out.println("Таблица создана или уже существует.");
-            statement.execute("CREATE TABLE if not exists 'students' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'lastname' text,'name' text,'email' text, 'group_id' INTEGER NOT NULL, FOREIGN KEY (group_id) REFERENCES groups (id));");
+            statement.execute("CREATE TABLE if not exists 'students' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name_test' text,'results' text,'group_id' INTEGER NOT NULL, FOREIGN KEY (group_id) REFERENCES groups (id));");
             System.out.println("Таблица создана или уже существует.");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -82,12 +82,12 @@ public class DBWorker {
             ex.printStackTrace();
         }
     }
-    public static List<Testee> getAllStudents() throws SQLException {
+    public static List<Testee> getAllTestees() throws SQLException {
         Statement statement = conn.createStatement();
         List<Testee> list = new ArrayList<Testee>();
-        ResultSet resultSet = statement.executeQuery("SELECT students.id, students.lastname, students.name, students.group_id, groups.title FROM students JOIN groups ON groups.id = students.group_id");
+        ResultSet resultSet = statement.executeQuery("SELECT students.id, students.name_test, students.results, students.group_id, groups.title FROM students JOIN groups ON groups.id = students.group_id");
         while (resultSet.next()) {
-            list.add(new Testee(resultSet.getInt("id"),resultSet.getString("lastname"), resultSet.getString("name"), getGroupName(resultSet.getInt("group_id"))));
+            list.add(new Testee(resultSet.getInt("id"),resultSet.getString("name_test"), resultSet.getString("results"), getGroupName(resultSet.getInt("group_id"))));
         }
         resultSet.close();
         statement.close();
@@ -102,7 +102,7 @@ public class DBWorker {
         statement.close();
         return grName;
     }
-    public static void deleteStudent(Testee testee) throws SQLException {
+    public static void deleteTestee(Testee testee) throws SQLException {
         Statement statement = conn.createStatement();
         statement.execute("DELETE FROM students WHERE students.id ="+ testee.getId());
         System.out.println("deleted!");
@@ -124,14 +124,13 @@ public class DBWorker {
             try {
                 if (resultSet != null)
                     resultSet.close();
-            } catch (SQLException e) {
-                // log the exception or print error message
+            } catch (SQLException ignored) {
             }
             try {
                 if (statement != null)
                     statement.close();
-            } catch (SQLException e) {
-                // log the exception or print error message
+            } catch (SQLException ignored) {
+
             }
         }
         return groupId;

@@ -60,9 +60,16 @@ public class MainWindow extends JFrame {
 
         deleteStudent = new JButton("Удалить студента");
         deleteStudent.addActionListener(e -> {
+            int selectedRow = studTable.getSelectedRow();
+            if(selectedRow == -1) {
+                // Если строка не выбрана, выводим сообщение
+                JOptionPane.showMessageDialog(this, "Выберите студента для удаления");
+                return;
+            }
+
             try {
-                DBWorker.deleteStudent(model.getStudent(studTable.getSelectedRow()));
-                studTable.setModel(new StudentsTableModel(DBWorker.getAllStudents()));
+                DBWorker.deleteStudent(model.getStudent(selectedRow));
+                model.setStudents(DBWorker.getAllStudents());
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }

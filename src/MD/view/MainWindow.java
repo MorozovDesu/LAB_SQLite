@@ -3,6 +3,7 @@ package MD.view;
 import MD.DB.DBWorker;
 import MD.model.Testee;
 import MD.TesteesTableModel;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,7 @@ public class MainWindow extends JFrame {
     private JButton addTest;
     private JButton deleteTest;
     private JButton addTestee;
+    JButton showTestees = new JButton("Показать группу");
     private TesteesTableModel model;
 
     public MainWindow() {
@@ -46,8 +48,8 @@ public class MainWindow extends JFrame {
         addTest.addActionListener(e -> {
             try {
                 String nameTestee = JOptionPane.showInputDialog(null, "Введите название теста");
-                String nameTest = JOptionPane.showInputDialog(null, "Введите количество баллов");
-                String resultTest = JOptionPane.showInputDialog(null, "Введите испытуемого");
+                String resultTest = JOptionPane.showInputDialog(null, "Введите количество баллов");
+                String nameTest = JOptionPane.showInputDialog(null, "Введите испытуемого");
                 Testee testee = new Testee(nameTestee, nameTest, resultTest);
                 DBWorker.addTest(testee);
                 List<Testee> allTestees = DBWorker.getAllTestees();
@@ -74,24 +76,38 @@ public class MainWindow extends JFrame {
         });
         addTestee = new JButton("Добавить испытуемого");
         addTestee.addActionListener(e -> {
-            String groupName = JOptionPane.showInputDialog(null, "Введите название группы");
-            if (groupName != null && !groupName.isEmpty()) {
+            String groupTitle = JOptionPane.showInputDialog(null, "Введите Фамилию студента");
+            if (groupTitle != null && !groupTitle.isEmpty()) {
+                DBWorker.addGroup(groupTitle);
+                List<Testee> allTestees;
                 try {
-                    int groupId = DBWorker.getGroupId(groupName);
-                    if (groupId == -1) {
-                        // Если группа не найдена, создаем новую
-                        DBWorker.addGroup(groupName);
-                        groupId = DBWorker.getGroupId(groupName);
-                    }
-                    Testee testee = new Testee(groupId);
-                    DBWorker.addGroup(String.valueOf(testee));
-                    model.setTestees(DBWorker.getAllTestees()); // Обновляем модель таблицы
+                    allTestees = DBWorker.getAllTestees();
+                    model.setTestees(allTestees); // Обновляем модель таблицы
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
             }
         });
+        showTestees.addActionListener(e -> {
+            try {
+                List<Pair<String, List<String>>> allGroups = DBWorker.getAllTesteeGroups();
+                StringBuilder sb = new StringBuilder();
+                for (Pair<String, List<String>> group : allGroups) {
+                    sb.append(group.getKey()).append(": ");
+                    if (group.getValue().isEmpty()) {
+                        sb.append("нет тестов");
+                    } else {
+                        sb.append(String.join(", ", group.getValue()));
+                    }
+                    sb.append("\n");
+                }
+                JOptionPane.showMessageDialog(this, sb.toString(), "Испытуемые", JOptionPane.PLAIN_MESSAGE);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
         JPanel butPane = new JPanel();
+        butPane.add(showTestees);
         butPane.add(addTest);
         butPane.add(deleteTest);
         butPane.add(addTestee);

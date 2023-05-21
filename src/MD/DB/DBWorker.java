@@ -1,6 +1,7 @@
 package MD.DB;
 
 import MD.model.Testee;
+import javafx.util.Pair;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -50,9 +51,21 @@ public class DBWorker {
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement statement = conn.prepareStatement(
                      "INSERT INTO students(`name_test`,`results`,`group_id`) VALUES(?,?,?)")) {
+            // Получаем id группы по ее названию (title)
+            String groupName = testee.getNameTestee();
+            PreparedStatement groupStatement = conn.prepareStatement("SELECT id FROM groups WHERE title = ?");
+            groupStatement.setString(1, groupName);
+            ResultSet groupResult = groupStatement.executeQuery();
+            int groupId = -1;
+            if (groupResult.next()) {
+                groupId = groupResult.getInt("id");
+            }
+            groupResult.close();
+            groupStatement.close();
+
             statement.setObject(1, testee.getNameTest());
             statement.setObject(2, testee.getResultTest());
-            statement.setObject(3, testee.getNameTestee());
+            statement.setObject(3, groupId);
             statement.execute();
         } catch(SQLException e) {
             e.printStackTrace();
@@ -76,7 +89,6 @@ public class DBWorker {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM groups");
             while (resultSet.next()){
                 System.out.println(resultSet.getString(2));
-
             }
         } catch (SQLException ex){
             ex.printStackTrace();
@@ -108,32 +120,33 @@ public class DBWorker {
         System.out.println("deleted!");
         statement.close();
     }
-    public static int getGroupId(String grName) throws SQLException {
-        Statement statement = null;
-        ResultSet resultSet = null;
-        int groupId = -1;
-        try {
-            statement = conn.createStatement();
-            resultSet = statement.executeQuery("SELECT id FROM groups WHERE title ='" + grName + "'");
-            if (resultSet.next()) {
-                groupId = resultSet.getInt(1);
+    public static List<Pair<String, List<String>>> getAllTesteeGroups() throws SQLException {
+        Statement statement = conn.createStatement();
+        ResultSet resultSet = statement.executeQuery(
+                "SELECT groups.title, students.name_test FROM groups LEFT JOIN students ON groups.id = students.group_id ORDER BY groups.id");
+        List<Pair<String, List<String>>> groups = new ArrayList<>();
+        String currentGroupTitle = null;
+        List<String> currentGroupTestees = new ArrayList<>();
+        while (resultSet.next()) {
+            String groupTitle = resultSet.getString(1);
+            String testeeName = resultSet.getString(2);
+            if (!groupTitle.equals(currentGroupTitle)) {
+                // Start a new group
+                if (currentGroupTitle != null) {
+                    groups.add(new Pair<>(currentGroupTitle, currentGroupTestees));
+                }
+                currentGroupTitle = groupTitle;
+                currentGroupTestees = new ArrayList<>();
             }
-        } catch (SQLException e) {
-            System.out.println("Error getting group ID from database: " + e.getMessage());
-        } finally {
-            try {
-                if (resultSet != null)
-                    resultSet.close();
-            } catch (SQLException ignored) {
-            }
-            try {
-                if (statement != null)
-                    statement.close();
-            } catch (SQLException ignored) {
-
+            if (testeeName != null) {
+                currentGroupTestees.add(testeeName);
             }
         }
-        return groupId;
+        if (currentGroupTitle != null) {
+            groups.add(new Pair<>(currentGroupTitle, currentGroupTestees));
+        }
+        resultSet.close();
+        statement.close();
+        return groups;
     }
-
 }
